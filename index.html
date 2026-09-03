@@ -279,11 +279,11 @@
 </head>
 <body>
 <div class="container">
-    <h1>Olivia's Volleyball Career</h1>
+    <h1>⚽ Olivia's Volleyball Career</h1>
 
     <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('tracker', event)">Match</button>
-        <button class="tab-btn" onclick="switchTab('history', event)">Match History</button>
+        <button class="tab-btn active" onclick="switchTab('tracker', event)">Track Game</button>
+        <button class="tab-btn" onclick="switchTab('history', event)">History</button>
     </div>
 
     <!-- Tracker View -->
@@ -298,9 +298,7 @@
                 <label for="gameLocation">Location / Opponent</label>
                 <input type="text" id="gameLocation" placeholder="e.g., Home vs Rockets" required>
             </div>
-            
-           <div class="card">
-            <h3>Game Stats</h3>
+
             <div class="stat-row">
                 <span>Good Serve</span>
                 <div class="counter">
@@ -400,13 +398,13 @@
     </div>
 </div>
 
-<!-- Firebase Scripts -->
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+<!-- Firebase Compat Scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-compat/app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-compat/database.js"></script>
 
 <script>
     // ========== PASTE YOUR FIREBASE CONFIG HERE ==========
-    const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyBpa5lwrAK8wGs3ON7m6PVcKtTiUQ0ATfY",
   authDomain: "olivia-vball.firebaseapp.com",
   databaseURL: "https://olivia-vball-default-rtdb.firebaseio.com",
