@@ -153,6 +153,11 @@
             background-color: #059669;
         }
 
+        .save-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
         .history-card {
             border-left: 4px solid var(--primary);
             margin-bottom: 15px;
@@ -214,6 +219,12 @@
             padding: 40px 0;
         }
 
+        .loading-state {
+            text-align: center;
+            color: var(--primary);
+            padding: 40px 0;
+        }
+
         /* Modal Styles */
         .modal-overlay {
             display: none;
@@ -237,7 +248,12 @@
             max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 20px;
+            padding: 24px;
+        }
+
+        .modal h3 {
+            margin-top: 0;
+            color: var(--text);
         }
 
         .modal-footer {
@@ -248,72 +264,71 @@
 
         .btn-cancel {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid var(--border);
-            background: white;
-            border-radius: 8px;
-            font-weight: bold;
+            background: #f9fafb;
+            border-radius: 6px;
+            font-weight: 600;
             cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
         }
     </style>
 </head>
 <body>
-
 <div class="container">
     <h1>Olivia's Volleyball Career</h1>
 
     <div class="nav-tabs">
-        <button type="button" class="tab-btn active" onclick="switchTab('tracker', event)">Match Tracker</button>
-        <button type="button" class="tab-btn" onclick="switchTab('history', event)">Match History</button>
+        <button class="tab-btn active" onclick="switchTab('tracker', event)">Match</button>
+        <button class="tab-btn" onclick="switchTab('history', event)">Match History</button>
     </div>
 
     <!-- Tracker View -->
     <div id="tracker" class="tab-content active">
-        <form id="trackerForm" onsubmit="saveGame(event)">
-            <div class="card">
-                <div class="form-group">
-                    <label for="gameDate">Date & Time</label>
-                    <input type="datetime-local" id="gameDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="gameLocation">Location / Opponent</label>
-                    <input type="text" id="gameLocation" placeholder="e.g., Lincoln High Gymnasium" required>
-                </div>
+        <form class="card" onsubmit="saveGame(event)">
+            <div class="form-group">
+                <label for="gameDate">Date & Time</label>
+                <input type="datetime-local" id="gameDate" required>
             </div>
 
-            <div class="card">
-                <h3>Game Stats</h3>
-                <div class="stat-row">
-                    <span>Good Serve</span>
-                    <div class="counter">
-                        <button type="button" onclick="updateStat('goodServe', -1)">-</button>
-                        <span id="goodServe">0</span>
-                        <button type="button" onclick="updateStat('goodServe', 1)">+</button>
-                    </div>
+            <div class="form-group">
+                <label for="gameLocation">Location / Opponent</label>
+                <input type="text" id="gameLocation" placeholder="e.g., Home vs Rockets" required>
+            </div>
+
+            <div class="stat-row">
+                <span>Good Serve</span>
+                <div class="counter">
+                    <button type="button" onclick="updateStat('goodServe', -1)">-</button>
+                    <span id="goodServe">0</span>
+                    <button type="button" onclick="updateStat('goodServe', 1)">+</button>
                 </div>
-                <div class="stat-row">
-                    <span>Points</span>
-                    <div class="counter">
-                        <button type="button" onclick="updateStat('points', -1)">-</button>
-                        <span id="points">0</span>
-                        <button type="button" onclick="updateStat('points', 1)">+</button>
-                    </div>
+            </div>
+            <div class="stat-row">
+                <span>Points</span>
+                <div class="counter">
+                    <button type="button" onclick="updateStat('points', -1)">-</button>
+                    <span id="points">0</span>
+                    <button type="button" onclick="updateStat('points', 1)">+</button>
                 </div>
-                <div class="stat-row">
-                    <span>Assists</span>
-                    <div class="counter">
-                        <button type="button" onclick="updateStat('assists', -1)">-</button>
-                        <span id="assists">0</span>
-                        <button type="button" onclick="updateStat('assists', 1)">+</button>
-                    </div>
+            </div>
+            <div class="stat-row">
+                <span>Assists</span>
+                <div class="counter">
+                    <button type="button" onclick="updateStat('assists', -1)">-</button>
+                    <span id="assists">0</span>
+                    <button type="button" onclick="updateStat('assists', 1)">+</button>
                 </div>
-                <div class="stat-row">
-                    <span>Good Try</span>
-                    <div class="counter">
-                        <button type="button" onclick="updateStat('goodTry', -1)">-</button>
-                        <span id="goodTry">0</span>
-                        <button type="button" onclick="updateStat('goodTry', 1)">+</button>
-                    </div>
+            </div>
+            <div class="stat-row">
+                <span>Good Try</span>
+                <div class="counter">
+                    <button type="button" onclick="updateStat('goodTry', -1)">-</button>
+                    <span id="goodTry">0</span>
+                    <button type="button" onclick="updateStat('goodTry', 1)">+</button>
                 </div>
             </div>
 
@@ -383,8 +398,29 @@
     </div>
 </div>
 
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+
 <script>
-   
+    // ========== PASTE YOUR FIREBASE CONFIG HERE ==========
+    const firebaseConfig = {
+  apiKey: "AIzaSyBpa5lwrAK8wGs3ON7m6PVcKtTiUQ0ATfY",
+  authDomain: "olivia-vball.firebaseapp.com",
+  databaseURL: "https://olivia-vball-default-rtdb.firebaseio.com",
+  projectId: "olivia-vball",
+  storageBucket: "olivia-vball.firebasestorage.app",
+  messagingSenderId: "134958664400",
+  appId: "1:134958664400:web:5b4868d366f04076196cd5",
+  measurementId: "G-2KXCZ3BQFN"
+};
+    // ====================================================
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const gamesRef = db.ref('games');
+
     let stats = { goodServe: 0, points: 0, assists: 0, goodTry: 0 };
     let editStats = { goodServe: 0, points: 0, assists: 0, goodTry: 0 };
 
@@ -413,90 +449,118 @@
     }
 
     function saveGame(event) {
-        if (event) event.preventDefault();
+        event.preventDefault();
 
         const location = document.getElementById('gameLocation').value.trim();
         const date = document.getElementById('gameDate').value;
 
         if (!location) return;
 
+        const saveBtn = event.target.querySelector('.save-btn');
+        saveBtn.disabled = true;
+        saveBtn.innerText = 'Saving...';
+
+        const gameId = String(Date.now());
         const gameObject = {
-            id: String(Date.now()),
             date: date,
             location: location,
             stats: { ...stats }
         };
 
-        const existingGames = JSON.parse(localStorage.getItem('oliviaVolleyballGames') || '[]');
-        existingGames.push(gameObject);
-        localStorage.setItem('oliviaVolleyballGames', JSON.stringify(existingGames));
-
-        stats = { goodServe: 0, points: 0, assists: 0, goodTry: 0 };
-        Object.keys(stats).forEach(key => document.getElementById(key).innerText = 0);
-        document.getElementById('gameLocation').value = '';
-        document.getElementById('gameDate').value = new Date().toISOString().slice(0, 16);
-
-        alert('Game saved successfully!');
+        gamesRef.child(gameId).set(gameObject).then(() => {
+            stats = { goodServe: 0, points: 0, assists: 0, goodTry: 0 };
+            Object.keys(stats).forEach(key => document.getElementById(key).innerText = 0);
+            document.getElementById('gameLocation').value = '';
+            document.getElementById('gameDate').value = new Date().toISOString().slice(0, 16);
+            
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Save Game & Reset Tracker';
+            alert('Game saved successfully!');
+        }).catch(error => {
+            console.error('Error saving game:', error);
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Save Game & Reset Tracker';
+            alert('Error saving game. Please check your Firebase config.');
+        });
     }
 
     function renderHistory() {
         const historyContainer = document.getElementById('historyList');
-        const games = JSON.parse(localStorage.getItem('oliviaVolleyballGames') || '[]');
+        historyContainer.innerHTML = '<div class="loading-state">Loading games...</div>';
 
-        if (games.length === 0) {
-            historyContainer.innerHTML = '<div class="empty-state">No saved games found yet.</div>';
-            return;
-        }
-
-        historyContainer.innerHTML = games.slice().reverse().map(game => {
-            const formattedDate = new Date(game.date).toLocaleString([], {
-                dateStyle: 'medium',
-                timeStyle: 'short'
+        gamesRef.once('value', (snapshot) => {
+            const games = [];
+            snapshot.forEach(childSnapshot => {
+                games.push({
+                    id: childSnapshot.key,
+                    ...childSnapshot.val()
+                });
             });
 
-            return `
-                <div class="card history-card">
-                    <div class="history-header">${game.location}</div>
-                    <div class="history-sub">${formattedDate}</div>
-                    <div class="history-stats">
-                        <div><strong>Good Serves:</strong> ${game.stats.goodServe}</div>
-                        <div><strong>Points:</strong> ${game.stats.points}</div>
-                        <div><strong>Assists:</strong> ${game.stats.assists}</div>
-                        <div><strong>Good Tries:</strong> ${game.stats.goodTry}</div>
+            if (games.length === 0) {
+                historyContainer.innerHTML = '<div class="empty-state">No saved games found yet.</div>';
+                return;
+            }
+
+            // Sort by date descending (newest first)
+            games.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            historyContainer.innerHTML = games.map(game => {
+                const formattedDate = new Date(game.date).toLocaleString([], {
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                });
+
+                return `
+                    <div class="card history-card">
+                        <div class="history-header">${game.location}</div>
+                        <div class="history-sub">${formattedDate}</div>
+                        <div class="history-stats">
+                            <div><strong>Good Serves:</strong> ${game.stats.goodServe}</div>
+                            <div><strong>Points:</strong> ${game.stats.points}</div>
+                            <div><strong>Assists:</strong> ${game.stats.assists}</div>
+                            <div><strong>Good Tries:</strong> ${game.stats.goodTry}</div>
+                        </div>
+                        <div class="card-actions">
+                            <button type="button" class="btn-action edit" onclick="openEditModal('${game.id}')">Edit</button>
+                            <button type="button" class="btn-action delete" onclick="deleteGame('${game.id}')">Delete</button>
+                        </div>
                     </div>
-                    <div class="card-actions">
-                        <button type="button" class="btn-action edit" onclick="openEditModal('${game.id}')">Edit</button>
-                        <button type="button" class="btn-action delete" onclick="deleteGame('${game.id}')">Delete</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
+                `;
+            }).join('');
+        }).catch(error => {
+            console.error('Error loading games:', error);
+            historyContainer.innerHTML = '<div class="empty-state">Error loading games. Check your Firebase config.</div>';
+        });
     }
 
     function deleteGame(id) {
         if (!confirm("Are you sure you want to delete this game?")) return;
        
-        let games = JSON.parse(localStorage.getItem('oliviaVolleyballGames') || '[]');
-        games = games.filter(g => String(g.id) !== String(id));
-        localStorage.setItem('oliviaVolleyballGames', JSON.stringify(games));
-        renderHistory();
+        gamesRef.child(id).remove().then(() => {
+            renderHistory();
+        }).catch(error => {
+            console.error('Error deleting game:', error);
+            alert('Error deleting game.');
+        });
     }
 
     function openEditModal(id) {
-        const games = JSON.parse(localStorage.getItem('oliviaVolleyballGames') || '[]');
-        const game = games.find(g => String(g.id) === String(id));
-        if (!game) return;
+        gamesRef.child(id).once('value', (snapshot) => {
+            const game = snapshot.val();
+            if (!game) return;
 
-        document.getElementById('editGameId').value = game.id;
-        document.getElementById('editDate').value = game.date;
-        document.getElementById('editLocation').value = game.location;
+            document.getElementById('editGameId').value = id;
+            document.getElementById('editDate').value = game.date;
+            document.getElementById('editLocation').value = game.location;
 
-        editStats = { ...game.stats };
-        Object.keys(editStats).forEach(key => {
-            document.getElementById('edit_' + key).innerText = editStats[key];
+            editStats = { ...game.stats };
+            Object.keys(editStats).forEach(key => {
+                document.getElementById('edit_' + key).innerText = editStats[key];
+            });
+
+            document.getElementById('editModal').classList.add('active');
         });
-
-        document.getElementById('editModal').classList.add('active');
     }
 
     function closeEditModal() {
@@ -506,18 +570,27 @@
     function submitEdit(event) {
         event.preventDefault();
         const id = document.getElementById('editGameId').value;
-        let games = JSON.parse(localStorage.getItem('oliviaVolleyballGames') || '[]');
+        const submitBtn = event.target.querySelector('.save-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Updating...';
 
-        const index = games.findIndex(g => String(g.id) === String(id));
-        if (index !== -1) {
-            games[index].date = document.getElementById('editDate').value;
-            games[index].location = document.getElementById('editLocation').value.trim();
-            games[index].stats = { ...editStats };
+        const updateData = {
+            date: document.getElementById('editDate').value,
+            location: document.getElementById('editLocation').value.trim(),
+            stats: { ...editStats }
+        };
 
-            localStorage.setItem('oliviaVolleyballGames', JSON.stringify(games));
+        gamesRef.child(id).set(updateData).then(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Update Game';
             closeEditModal();
             renderHistory();
-        }
+        }).catch(error => {
+            console.error('Error updating game:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Update Game';
+            alert('Error updating game.');
+        });
     }
 </script>
 
