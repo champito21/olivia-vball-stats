@@ -384,24 +384,7 @@
 </div>
 
 <script>
- // ========== PASTE YOUR FIREBASE CONFIG HERE ==========
-const firebaseConfig = {
-  apiKey: "AIzaSyBpa5lwrAK8wGs3ON7m6PVcKtTiUQ0ATfY",
-  authDomain: "olivia-vball.firebaseapp.com",
-  databaseURL: "https://olivia-vball-default-rtdb.firebaseio.com",
-  projectId: "olivia-vball",
-  storageBucket: "olivia-vball.firebasestorage.app",
-  messagingSenderId: "134958664400",
-  appId: "1:134958664400:web:5b4868d366f04076196cd5",
-  measurementId: "G-2KXCZ3BQFN"
-};
-    // ====================================================
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const gamesRef = db.ref('games');
-    
+   
     let stats = { goodServe: 0, points: 0, assists: 0, goodTry: 0 };
     let editStats = { goodServe: 0, points: 0, assists: 0, goodTry: 0 };
 
